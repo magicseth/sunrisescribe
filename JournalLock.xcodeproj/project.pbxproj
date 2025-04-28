@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		1B20D3992DBF398100E880A3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B20D3982DBF398100E880A3 /* AppDelegate.swift */; };
+		1B20D39B2DBF39E800E880A3 /* JournalWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B20D39A2DBF39E800E880A3 /* JournalWindowController.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		1B20D37C2DBF33E700E880A3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +32,8 @@
 		1B20D36A2DBF33E500E880A3 /* JournalLock.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JournalLock.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1B20D37B2DBF33E700E880A3 /* JournalLockTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JournalLockTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1B20D3852DBF33E700E880A3 /* JournalLockUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JournalLockUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		1B20D3982DBF398100E880A3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		1B20D39A2DBF39E800E880A3 /* JournalWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalWindowController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -75,6 +82,8 @@
 		1B20D3612DBF33E500E880A3 = {
 			isa = PBXGroup;
 			children = (
+				1B20D3982DBF398100E880A3 /* AppDelegate.swift */,
+				1B20D39A2DBF39E800E880A3 /* JournalWindowController.swift */,
 				1B20D36C2DBF33E500E880A3 /* JournalLock */,
 				1B20D37E2DBF33E700E880A3 /* JournalLockTests */,
 				1B20D3882DBF33E700E880A3 /* JournalLockUITests */,
@@ -236,6 +245,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1B20D3992DBF398100E880A3 /* AppDelegate.swift in Sources */,
+				1B20D39B2DBF39E800E880A3 /* JournalWindowController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -401,6 +412,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -428,6 +440,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
