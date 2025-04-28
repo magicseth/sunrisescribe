@@ -87,9 +87,14 @@ struct TabbableTextEditor: NSViewRepresentable {
         textView.focusID = focusID
         textView.focusBinding = focusBinding
         
-        // Add a click gesture recognizer to the scroll view to handle clicks outside text but within the scroll view
-        let clickRecognizer = NSClickGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleScrollViewClick(_:)))
-        scrollView.addGestureRecognizer(clickRecognizer)
+        // Make the scroll view pass on clicks to the text view
+        scrollView.postsFrameChangedNotifications = true
+        NotificationCenter.default.addObserver(
+            context.coordinator,
+            selector: #selector(Coordinator.scrollViewFrameChanged(_:)),
+            name: NSView.frameDidChangeNotification,
+            object: scrollView
+        )
         
         return scrollView
     }
@@ -127,21 +132,6 @@ struct TabbableTextEditor: NSViewRepresentable {
             parent.text = tv.string
         }
         
-        @objc func handleScrollViewClick(_ recognizer: NSClickGestureRecognizer) {
-            guard let scrollView = recognizer.view as? NSScrollView,
-                  let textView = scrollView.documentView as? TabbableNSTextView else { return }
-            
-            // Focus the text view when the scroll view is clicked
-            if let window = scrollView.window {
-                window.makeFirstResponder(textView)
-                
-                // Update SwiftUI focus binding
-                if let id = textView.focusID, let binding = textView.focusBinding {
-                    binding.wrappedValue = id
-                }
-            }
-        }
-        
         func textDidBeginEditing(_ notification: Notification) {
             guard let tv = notification.object as? TabbableNSTextView else { return }
             
@@ -149,6 +139,17 @@ struct TabbableTextEditor: NSViewRepresentable {
             if let id = tv.focusID, let binding = tv.focusBinding {
                 binding.wrappedValue = id
             }
+        }
+        
+        @objc func scrollViewFrameChanged(_ notification: Notification) {
+            guard let scrollView = notification.object as? NSScrollView,
+                  let textView = scrollView.documentView as? TabbableNSTextView else { return }
+            
+            // Ensure text container width matches scroll view width
+            textView.textContainer?.containerSize = NSSize(
+                width: scrollView.contentSize.width,
+                height: CGFloat.greatestFiniteMagnitude
+            )
         }
     }
 }
@@ -162,6 +163,25 @@ private final class TabbableNSTextView: NSTextView {
     // These are injected from makeNSView
     fileprivate var focusID: TabbableTextEditor.FocusID?
     fileprivate var focusBinding: FocusState<TabbableTextEditor.FocusID?>.Binding?
+
+    // Disable any special handling that might interfere with normal clicks
+    override var acceptsFirstResponder: Bool { return true }
+    
+    // Ensure we properly process mouse events
+    override func mouseDown(with event: NSEvent) {
+        // Set ourselves as first responder before handling the click
+        if let window = window, window.firstResponder != self {
+            window.makeFirstResponder(self)
+        }
+        
+        // Now let the regular mouseDown handle it
+        super.mouseDown(with: event)
+        
+        // Update SwiftUI focus binding as well
+        if let id = focusID, let binding = focusBinding {
+            binding.wrappedValue = id
+        }
+    }
 
     override func keyDown(with event: NSEvent) {
         guard event.keyCode == kVK_Tab else {      // use Carbon constant
@@ -198,24 +218,6 @@ private final class TabbableNSTextView: NSTextView {
         }
         
         return result
-    }
-    
-    // Override mouseDown to ensure clicks properly update focus
-    override func mouseDown(with event: NSEvent) {
-        // First, handle the click normally
-        super.mouseDown(with: event)
-        
-        // Make sure we're the first responder
-        if let window = self.window, window.firstResponder != self {
-            window.makeFirstResponder(self)
-        }
-        
-        // Update SwiftUI focus binding with a slight delay to ensure AppKit has processed the event
-        if let id = focusID, let binding = focusBinding {
-            DispatchQueue.main.async {
-                binding.wrappedValue = id
-            }
-        }
     }
     
     // Handle click activation

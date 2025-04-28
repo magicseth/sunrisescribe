@@ -201,7 +201,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 1B20D3652DBF33E500E880A3 /* Build configuration list for PBXProject "JournalLock" */;
+			buildConfigurationList = 1B20D3652DBF33E500E880A3 /* Build configuration list for PBXProject "Sunrise Scribe" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -539,7 +539,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1B20D3652DBF33E500E880A3 /* Build configuration list for PBXProject "JournalLock" */ = {
+		1B20D3652DBF33E500E880A3 /* Build configuration list for PBXProject "Sunrise Scribe" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1B20D38D2DBF33E700E880A3 /* Debug */,
