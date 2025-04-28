@@ -6,30 +6,88 @@ struct TabbableTextEditor: NSViewRepresentable {
     @Binding var text: String
     let focusID: FocusID                          // identifies this editor
     let focusBinding: FocusState<FocusID?>.Binding
+    var minHeight: CGFloat = 100                  // Default minimum height
 
     enum FocusID { case yesterday, today }
 
     // MARK: – NSViewRepresentable
-    func makeNSView(context: Context) -> NSTextView {
-        let textView = TabbableNSTextView()
+    func makeNSView(context: Context) -> NSScrollView {
+        // Create the text view with frame to ensure proper initialization
+        let textView = TabbableNSTextView(frame: NSRect(x: 0, y: 0, width: 100, height: minHeight))
+        
+        // Configure basic text settings
         textView.isRichText = false
         textView.isAutomaticQuoteSubstitutionEnabled = false
         textView.font = .monospacedSystemFont(ofSize: 14, weight: .regular)
+        
+        // Use dynamic colors that adapt to system appearance
+        if #available(macOS 10.14, *) {
+            textView.textColor = .labelColor
+            textView.backgroundColor = .textBackgroundColor
+        } else {
+            textView.textColor = .textColor
+            textView.backgroundColor = .textBackgroundColor
+        }
+        
+        textView.drawsBackground = true
         textView.delegate = context.coordinator
         textView.string = text
-        textView.enclosingScrollView?.hasHorizontalScroller = false
-
+        
+        // Set up minimum height constraints
+        textView.minSize = NSSize(width: 0, height: minHeight)
+        textView.isVerticallyResizable = true
+        textView.isHorizontallyResizable = false
+        
+        // Create and configure the scroll view
+        let scrollView = NSScrollView(frame: NSRect(x: 0, y: 0, width: 100, height: minHeight))
+        scrollView.hasVerticalScroller = true
+        scrollView.hasHorizontalScroller = false
+        scrollView.borderType = .noBorder
+        
+        // Use dynamic background color for scroll view
+        if #available(macOS 10.14, *) {
+            scrollView.backgroundColor = .windowBackgroundColor
+        } else {
+            scrollView.backgroundColor = .controlBackgroundColor
+        }
+        
+        // Text container setup
+        textView.textContainer?.containerSize = NSSize(
+            width: scrollView.contentSize.width,
+            height: CGFloat.greatestFiniteMagnitude
+        )
+        textView.textContainer?.widthTracksTextView = true
+        
+        // Connect text view to scroll view
+        scrollView.documentView = textView
+        
         // Give the key-loop a place to go next/previous
         textView.nextKeyView = nil    // will be wired automatically by SwiftUI
-
+        
         // Store our own identifier
         textView.focusID = focusID
         textView.focusBinding = focusBinding
-        return textView
+        
+        // Add a click gesture recognizer to the scroll view to handle clicks outside text but within the scroll view
+        let clickRecognizer = NSClickGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleScrollViewClick(_:)))
+        scrollView.addGestureRecognizer(clickRecognizer)
+        
+        return scrollView
     }
 
-    func updateNSView(_ nsView: NSTextView, context: Context) {
-        if nsView.string != text { nsView.string = text }
+    func updateNSView(_ nsView: NSScrollView, context: Context) {
+        guard let textView = nsView.documentView as? NSTextView else { return }
+        if textView.string != text { textView.string = text }
+        textView.minSize = NSSize(width: 0, height: minHeight)
+        
+        // Ensure focus state is correctly reflected
+        if let textView = nsView.documentView as? TabbableNSTextView {
+            if focusBinding.wrappedValue == focusID {
+                if nsView.window?.firstResponder != textView {
+                    nsView.window?.makeFirstResponder(textView)
+                }
+            }
+        }
     }
 
     func makeCoordinator() -> Coordinator { Coordinator(self) }
@@ -42,6 +100,30 @@ struct TabbableTextEditor: NSViewRepresentable {
         func textDidChange(_ notification: Notification) {
             guard let tv = notification.object as? NSTextView else { return }
             parent.text = tv.string
+        }
+        
+        @objc func handleScrollViewClick(_ recognizer: NSClickGestureRecognizer) {
+            guard let scrollView = recognizer.view as? NSScrollView,
+                  let textView = scrollView.documentView as? TabbableNSTextView else { return }
+            
+            // Focus the text view when the scroll view is clicked
+            if let window = scrollView.window {
+                window.makeFirstResponder(textView)
+                
+                // Update SwiftUI focus binding
+                if let id = textView.focusID, let binding = textView.focusBinding {
+                    binding.wrappedValue = id
+                }
+            }
+        }
+        
+        func textDidBeginEditing(_ notification: Notification) {
+            guard let tv = notification.object as? TabbableNSTextView else { return }
+            
+            // Update focus when editing begins
+            if let id = tv.focusID, let binding = tv.focusBinding {
+                binding.wrappedValue = id
+            }
         }
     }
 }
@@ -70,11 +152,59 @@ private final class TabbableNSTextView: NSTextView {
         }
 
         // 2. Hop the AppKit key-view ring so NSResponder chain stays happy
-        if event.modifierFlags.contains(.shift) {
-            window?.selectPreviousKeyView(self)
-        } else {
-            window?.selectNextKeyView(self)
+        if let window = self.window {
+            if event.modifierFlags.contains(.shift) {
+                window.selectPreviousKeyView(self)
+            } else {
+                window.selectNextKeyView(self)
+            }
         }
+    }
+    
+    // Override to update SwiftUI focus state when this view becomes first responder
+    override func becomeFirstResponder() -> Bool {
+        let result = super.becomeFirstResponder()
+        
+        // Update SwiftUI focus binding when we become first responder
+        if result, let id = focusID, let binding = focusBinding {
+            DispatchQueue.main.async {
+                binding.wrappedValue = id
+            }
+        }
+        
+        return result
+    }
+    
+    // Override mouseDown to ensure clicks properly update focus
+    override func mouseDown(with event: NSEvent) {
+        // First, handle the click normally
+        super.mouseDown(with: event)
+        
+        // Make sure we're the first responder
+        if let window = self.window, window.firstResponder != self {
+            window.makeFirstResponder(self)
+        }
+        
+        // Update SwiftUI focus binding with a slight delay to ensure AppKit has processed the event
+        if let id = focusID, let binding = focusBinding {
+            DispatchQueue.main.async {
+                binding.wrappedValue = id
+            }
+        }
+    }
+    
+    // Handle click activation
+    override func hitTest(_ point: NSPoint) -> NSView? {
+        let result = super.hitTest(point)
+        if result == self {
+            // If we're being clicked, ensure we update focus state
+            if let id = focusID, let binding = focusBinding {
+                DispatchQueue.main.async {
+                    binding.wrappedValue = id
+                }
+            }
+        }
+        return result
     }
 
     private func next(of id: TabbableTextEditor.FocusID)

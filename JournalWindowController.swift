@@ -25,13 +25,17 @@ enum JournalSaver {
 }
 
 final class JournalWindowController: NSWindowController {
+    private var hostingController: NSHostingController<AnyView>!
+    // Add a counter to force ContentView recreation
+    private var viewResetCounter = 0
 
     init() {
         // 1️⃣  Make the hosting controller generic over AnyView
         let host = NSHostingController(rootView: AnyView(EmptyView()))
+        self.hostingController = host
 
         // 2️⃣  Build the window
-        let win = NSWindow(contentViewController: host)
+        let win = JournalWindow(contentViewController: host)
         win.styleMask = [.fullSizeContentView, .titled]
         win.titleVisibility = .hidden
         win.collectionBehavior = [.fullScreenPrimary, .canJoinAllSpaces]
@@ -43,21 +47,51 @@ final class JournalWindowController: NSWindowController {
         super.init(window: win)            // ✅ self is now fully initialised
 
         // 3️⃣  Now we can capture `self`
-        host.rootView = AnyView(ContentView { [weak self] y, t in
-            JournalSaver.save(yesterday: y, today: t)
-            self?.hideAndRelax()
-
-            self?.close()
-        })
+        refreshContentView()
+    }
+    
+    private func refreshContentView() {
+        // Increment counter to force SwiftUI to create a completely new ContentView
+        viewResetCounter += 1
+        
+        // Use the ID parameter to force a new instance with fresh state
+        hostingController.rootView = AnyView(
+            ContentView(
+                onSave: { [weak self] (yesterday: String, today: String) in
+                    JournalSaver.save(yesterday: yesterday, today: today)
+                    self?.hideAndRelax()
+                    self?.close()
+                },
+                onDefer: { [weak self] () in
+                    self?.hideAndRelax()
+                    self?.close()
+                }
+            )
+            .id(viewResetCounter) // This forces SwiftUI to create a completely new view instance
+        )
     }
 
     @available(*, unavailable)
     required init(coder: NSCoder) { fatalError() }
+    private var escMonitor: Any?          // ← new
 
     func show() {
         guard let win = window else { return }
+        
+        // Reset the ContentView to ensure the timer and text fields are reset
+        refreshContentView()
+        
+        escMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { ev in
+            // ⌘-Q is already blocked; here we stop plain Esc and ⌘-.
+            if ev.keyCode == kVK_Escape { return nil }
+            if ev.keyCode == kVK_ANSI_Period && ev.modifierFlags.contains(.command) {
+                return nil
+            }
+            return ev        // pass everything else through
+        }
 
-        // 1️⃣ Become a ‘real’ app so kiosk flags are honoured
+
+        // 1️⃣ Become a 'real' app so kiosk flags are honoured
         if NSApp.activationPolicy() != .regular {
             NSApp.setActivationPolicy(.regular)
         }
@@ -77,7 +111,7 @@ final class JournalWindowController: NSWindowController {
         if !win.isZoomed { win.toggleFullScreen(nil) }
     }
 
-    /// Called by ContentView’s “Save” button
+    /// Called by ContentView's "Save" button
     func hideAndRelax() {
         guard let win = window else { return }
 
@@ -91,3 +125,4 @@ final class JournalWindowController: NSWindowController {
         NSApp.setActivationPolicy(.accessory)
     }
 }
+import Carbon.HIToolbox   // for kVK_Tab

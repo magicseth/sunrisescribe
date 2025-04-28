@@ -2,10 +2,13 @@ import SwiftUI
 
 struct ContentView: View {
     let onSave: (_ yesterday: String, _ today: String) -> Void
+    let onDefer: () -> Void
     @FocusState private var focus: TabbableTextEditor.FocusID?
 
     @State private var yesterdayText = ""
     @State private var todayText     = ""
+    @State private var secondsRemaining = 30
+    @State private var timer: Timer?
 
     var body: some View {
         // 1️⃣  GeometryReader gives us the screen size
@@ -21,7 +24,6 @@ struct ContentView: View {
                                focusID: .yesterday,
                                focusBinding: $focus
                            )
-                           .focused($focus, equals: .yesterday)
                            .frame(minHeight: 160)                    }
 
                     GroupBox("Your hopes & dreams for **today**:") {
@@ -30,7 +32,6 @@ struct ContentView: View {
                             focusID: .today,
                             focusBinding: $focus
                         )
-                        .focused($focus, equals: .today)
                         .frame(minHeight: 160)
                     }
 
@@ -44,6 +45,11 @@ struct ContentView: View {
                     .buttonStyle(.borderedProminent)
                     .disabled(yesterdayText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
                               todayText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    
+                    Button(secondsRemaining > 0 ? "Skip for now (\(secondsRemaining)s)" : "Skip for now") {
+                        onDefer()
+                    }
+                    .disabled(secondsRemaining > 0)
                 }
                 // 2️⃣  centre the content but cap its width for readability
                 .frame(maxWidth: min(geo.size.width * 0.9, 700))
@@ -55,8 +61,24 @@ struct ContentView: View {
         // 3️⃣  colour the *entire* full-screen space
         .background(Color(NSColor.windowBackgroundColor))
         .ignoresSafeArea()           // ← crucial: extend into system areas
-        .onAppear { focus = .yesterday
-            }   // start in first field
-
+        .onAppear { 
+            focus = .yesterday
+            startTimer()
+        }   // start in first field
+        .onDisappear {
+            timer?.invalidate()
+            timer = nil
+        }
+    }
+    
+    private func startTimer() {
+        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
+            if secondsRemaining > 0 {
+                secondsRemaining -= 1
+            } else {
+                timer?.invalidate()
+                timer = nil
+            }
+        }
     }
 }
