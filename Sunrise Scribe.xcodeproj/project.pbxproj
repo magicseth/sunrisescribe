@@ -31,7 +31,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1B20D36A2DBF33E500E880A3 /* JournalLock.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JournalLock.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1B20D36A2DBF33E500E880A3 /* Sunrise Scribe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Sunrise Scribe.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1B20D37B2DBF33E700E880A3 /* JournalLockTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JournalLockTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1B20D3852DBF33E700E880A3 /* JournalLockUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JournalLockUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1B20D3982DBF398100E880A3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -100,7 +100,7 @@
 		1B20D36B2DBF33E500E880A3 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1B20D36A2DBF33E500E880A3 /* JournalLock.app */,
+				1B20D36A2DBF33E500E880A3 /* Sunrise Scribe.app */,
 				1B20D37B2DBF33E700E880A3 /* JournalLockTests.xctest */,
 				1B20D3852DBF33E700E880A3 /* JournalLockUITests.xctest */,
 			);
@@ -110,9 +110,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		1B20D3692DBF33E500E880A3 /* JournalLock */ = {
+		1B20D3692DBF33E500E880A3 /* Sunrise Scribe */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1B20D38F2DBF33E700E880A3 /* Build configuration list for PBXNativeTarget "JournalLock" */;
+			buildConfigurationList = 1B20D38F2DBF33E700E880A3 /* Build configuration list for PBXNativeTarget "Sunrise Scribe" */;
 			buildPhases = (
 				1B20D3662DBF33E500E880A3 /* Sources */,
 				1B20D3672DBF33E500E880A3 /* Frameworks */,
@@ -125,11 +125,11 @@
 			fileSystemSynchronizedGroups = (
 				1B20D36C2DBF33E500E880A3 /* JournalLock */,
 			);
-			name = JournalLock;
+			name = "Sunrise Scribe";
 			packageProductDependencies = (
 			);
 			productName = JournalLock;
-			productReference = 1B20D36A2DBF33E500E880A3 /* JournalLock.app */;
+			productReference = 1B20D36A2DBF33E500E880A3 /* Sunrise Scribe.app */;
 			productType = "com.apple.product-type.application";
 		};
 		1B20D37A2DBF33E700E880A3 /* JournalLockTests */ = {
@@ -215,7 +215,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				1B20D3692DBF33E500E880A3 /* JournalLock */,
+				1B20D3692DBF33E500E880A3 /* Sunrise Scribe */,
 				1B20D37A2DBF33E700E880A3 /* JournalLockTests */,
 				1B20D3842DBF33E700E880A3 /* JournalLockUITests */,
 			);
@@ -277,12 +277,12 @@
 /* Begin PBXTargetDependency section */
 		1B20D37D2DBF33E700E880A3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 1B20D3692DBF33E500E880A3 /* JournalLock */;
+			target = 1B20D3692DBF33E500E880A3 /* Sunrise Scribe */;
 			targetProxy = 1B20D37C2DBF33E700E880A3 /* PBXContainerItemProxy */;
 		};
 		1B20D3872DBF33E700E880A3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 1B20D3692DBF33E500E880A3 /* JournalLock */;
+			target = 1B20D3692DBF33E500E880A3 /* Sunrise Scribe */;
 			targetProxy = 1B20D3862DBF33E700E880A3 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -412,14 +412,17 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = JournalLock/JournalLock.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"JournalLock/Preview Content\"";
-				DEVELOPMENT_TEAM = FLZXH7TXYC;
+				DEVELOPMENT_TEAM = TCU64E3XV4;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Sunrise Scribe";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -427,7 +430,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.magicseth.JournalLock;
+				PRODUCT_BUNDLE_IDENTIFIER = com.magicseth.SunriseScribe;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -440,14 +443,17 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = JournalLock/JournalLock.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"JournalLock/Preview Content\"";
-				DEVELOPMENT_TEAM = FLZXH7TXYC;
+				DEVELOPMENT_TEAM = TCU64E3XV4;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Sunrise Scribe";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -455,7 +461,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.magicseth.JournalLock;
+				PRODUCT_BUNDLE_IDENTIFIER = com.magicseth.SunriseScribe;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -542,7 +548,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		1B20D38F2DBF33E700E880A3 /* Build configuration list for PBXNativeTarget "JournalLock" */ = {
+		1B20D38F2DBF33E700E880A3 /* Build configuration list for PBXNativeTarget "Sunrise Scribe" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1B20D3902DBF33E700E880A3 /* Debug */,

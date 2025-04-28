@@ -36,13 +36,32 @@ struct TabbableTextEditor: NSViewRepresentable {
         // Set up minimum height constraints
         textView.minSize = NSSize(width: 0, height: minHeight)
         textView.isVerticallyResizable = true
-        textView.isHorizontallyResizable = false
+        textView.isHorizontallyResizable = true
+        
+        // Enable proper text wrapping
+        textView.textContainer?.widthTracksTextView = true
+        textView.textContainer?.lineFragmentPadding = 5
+        textView.layoutManager?.allowsNonContiguousLayout = true
         
         // Create and configure the scroll view
         let scrollView = NSScrollView(frame: NSRect(x: 0, y: 0, width: 100, height: minHeight))
         scrollView.hasVerticalScroller = true
         scrollView.hasHorizontalScroller = false
         scrollView.borderType = .noBorder
+        scrollView.autoresizingMask = [.width, .height] // Make it resize with parent
+        
+        // Ensure proper text wrapping
+        textView.maxSize = NSSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
+        textView.autoresizingMask = [.width]
+        textView.textContainer?.size = NSSize(width: scrollView.contentSize.width, height: CGFloat.greatestFiniteMagnitude)
+        
+        // Fix text wrapping and visualization
+        textView.isHorizontallyResizable = false
+        
+        // Update the view to use the full width
+        let contentWidth = scrollView.contentSize.width
+        textView.frame.size.width = contentWidth
+        textView.textContainer?.containerSize = NSSize(width: contentWidth, height: CGFloat.greatestFiniteMagnitude)
         
         // Use dynamic background color for scroll view
         if #available(macOS 10.14, *) {
@@ -79,6 +98,12 @@ struct TabbableTextEditor: NSViewRepresentable {
         guard let textView = nsView.documentView as? NSTextView else { return }
         if textView.string != text { textView.string = text }
         textView.minSize = NSSize(width: 0, height: minHeight)
+        
+        // Update text container width to match scroll view width
+        textView.textContainer?.size = NSSize(
+            width: nsView.contentSize.width,
+            height: CGFloat.greatestFiniteMagnitude
+        )
         
         // Ensure focus state is correctly reflected
         if let textView = nsView.documentView as? TabbableNSTextView {

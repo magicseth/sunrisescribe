@@ -38,7 +38,10 @@ struct ContentView: View {
                                focusID: .yesterday,
                                focusBinding: $focus
                            )
-                           .frame(minHeight: 160)                    }
+                        .frame(maxWidth: .infinity, minHeight: 160)
+                        .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .frame(maxWidth: .infinity)
 
                     GroupBox("Your hopes & dreams for **today**:") {
                         TabbableTextEditor(
@@ -46,8 +49,10 @@ struct ContentView: View {
                             focusID: .today,
                             focusBinding: $focus
                         )
-                        .frame(minHeight: 160)
+                        .frame(maxWidth: .infinity, minHeight: 160)
+                        .fixedSize(horizontal: false, vertical: true)
                     }
+                    .frame(maxWidth: .infinity)
 
                     Button("Save and start the day") {
                         onSave(
