@@ -28,6 +28,10 @@ final class JournalWindowController: NSWindowController {
     private var hostingController: NSHostingController<AnyView>!
     // Add a counter to force ContentView recreation
     private var viewResetCounter = 0
+    
+    // Store the content when deferred
+    private var savedYesterdayText = ""
+    private var savedTodayText = ""
 
     init() {
         // 1️⃣  Make the hosting controller generic over AnyView
@@ -57,12 +61,17 @@ final class JournalWindowController: NSWindowController {
         // Use the ID parameter to force a new instance with fresh state
         hostingController.rootView = AnyView(
             ContentView(
+                initialYesterday: savedYesterdayText,
+                initialToday: savedTodayText,
                 onSave: { [weak self] (yesterday: String, today: String) in
                     JournalSaver.save(yesterday: yesterday, today: today)
                     self?.hideAndRelax()
                     self?.close()
                 },
-                onDefer: { [weak self] () in
+                onDefer: { [weak self] (yesterday: String, today: String) in
+                    // Save the current text when deferring
+                    self?.savedYesterdayText = yesterday
+                    self?.savedTodayText = today
                     self?.hideAndRelax()
                     self?.close()
                 }
@@ -78,7 +87,7 @@ final class JournalWindowController: NSWindowController {
     func show() {
         guard let win = window else { return }
         
-        // Reset the ContentView to ensure the timer and text fields are reset
+        // Reset the ContentView to ensure the timer is reset, but preserve text fields
         refreshContentView()
         
         escMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { ev in

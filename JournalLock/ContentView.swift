@@ -2,13 +2,27 @@ import SwiftUI
 
 struct ContentView: View {
     let onSave: (_ yesterday: String, _ today: String) -> Void
-    let onDefer: () -> Void
+    let onDefer: (_ yesterday: String, _ today: String) -> Void
     @FocusState private var focus: TabbableTextEditor.FocusID?
 
-    @State private var yesterdayText = ""
-    @State private var todayText     = ""
+    @State private var yesterdayText: String
+    @State private var todayText: String
     @State private var secondsRemaining = 30
     @State private var timer: Timer?
+    
+    // Initialize with optional initial values
+    init(
+        initialYesterday: String = "", 
+        initialToday: String = "", 
+        onSave: @escaping (_ yesterday: String, _ today: String) -> Void,
+        onDefer: @escaping (_ yesterday: String, _ today: String) -> Void
+    ) {
+        self.onSave = onSave
+        self.onDefer = onDefer
+        // Use _yesterdayText and _todayText to initialize @State properties
+        self._yesterdayText = State(initialValue: initialYesterday)
+        self._todayText = State(initialValue: initialToday)
+    }
 
     var body: some View {
         // 1️⃣  GeometryReader gives us the screen size
@@ -47,7 +61,7 @@ struct ContentView: View {
                               todayText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                     
                     Button(secondsRemaining > 0 ? "Skip for now (\(secondsRemaining)s)" : "Skip for now") {
-                        onDefer()
+                        onDefer(yesterdayText, todayText)
                     }
                     .disabled(secondsRemaining > 0)
                 }
