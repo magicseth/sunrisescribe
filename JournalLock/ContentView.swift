@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     let onSave: (_ yesterday: String, _ today: String) -> Void
+    @FocusState private var focus: TabbableTextEditor.FocusID?
 
     @State private var yesterdayText = ""
     @State private var todayText     = ""
@@ -15,15 +16,22 @@ struct ContentView: View {
                         .font(.largeTitle.weight(.bold))
 
                     GroupBox("What happened **yesterday**?") {
-                        TextEditor(text: $yesterdayText)
-                            .scrollContentBackground(.hidden)
-                            .frame(minHeight: 160)
-                    }
+                        TabbableTextEditor(
+                               text: $yesterdayText,
+                               focusID: .yesterday,
+                               focusBinding: $focus
+                           )
+                           .focused($focus, equals: .yesterday)
+                           .frame(minHeight: 160)                    }
 
                     GroupBox("Your hopes & dreams for **today**:") {
-                        TextEditor(text: $todayText)
-                            .scrollContentBackground(.hidden)
-                            .frame(minHeight: 160)
+                        TabbableTextEditor(
+                            text: $todayText,
+                            focusID: .today,
+                            focusBinding: $focus
+                        )
+                        .focused($focus, equals: .today)
+                        .frame(minHeight: 160)
                     }
 
                     Button("Save and start the day") {
@@ -47,5 +55,8 @@ struct ContentView: View {
         // 3️⃣  colour the *entire* full-screen space
         .background(Color(NSColor.windowBackgroundColor))
         .ignoresSafeArea()           // ← crucial: extend into system areas
+        .onAppear { focus = .yesterday
+            }   // start in first field
+
     }
 }

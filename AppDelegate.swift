@@ -38,4 +38,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                   .appendingPathComponent("JournalEntries/\(df.string(from: .now)).txt").path
         return !FileManager.default.fileExists(atPath: path)
     }
+    func applicationShouldTerminate(_ sender: NSApplication)
+        -> NSApplication.TerminateReply
+    {
+         .terminateCancel     // block quit
+        
+    }
+
 }
