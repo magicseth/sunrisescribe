@@ -7,9 +7,7 @@ struct JournalLockApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     // Directory that will hold YYYY-MM-DD.txt files
-    private let journalDir = FileManager.default
-        .homeDirectoryForCurrentUser
-        .appendingPathComponent("JournalEntries")
+    private let journalDir = JournalDirectory.get()
 
     init() {
         registerAsLoginItem()             // auto-launch at login

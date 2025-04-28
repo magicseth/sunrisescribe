@@ -5,8 +5,7 @@ import AppKit
 enum JournalSaver {
     static func save(yesterday: String, today: String) {
         let df = DateFormatter(); df.dateFormat = "yyyy-MM-dd"
-        let dir = FileManager.default.homeDirectoryForCurrentUser
-                   .appendingPathComponent("JournalEntries")
+        let dir = JournalDirectory.get()
         try? FileManager.default.createDirectory(at: dir,
                       withIntermediateDirectories: true)
         let file = dir.appendingPathComponent("\(df.string(from: .now)).txt")
@@ -21,6 +20,8 @@ enum JournalSaver {
 
         try? content.write(to: file, atomically: true, encoding: .utf8)
 
+        // Reveal in Finder
+        NSWorkspace.shared.activateFileViewerSelecting([file])
     }
 }
 

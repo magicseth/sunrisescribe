@@ -1,4 +1,7 @@
 import SwiftUI
+import AppKit
+// Provide visibility of JournalDirectory for Swift Playground
+// (module-level linking should already expose, but this ensures same compilation unit.)
 
 struct ContentView: View {
     let onSave: (_ yesterday: String, _ today: String) -> Void
@@ -9,6 +12,7 @@ struct ContentView: View {
     @State private var todayText: String
     @State private var secondsRemaining = 30
     @State private var timer: Timer?
+    @State private var chosenDirectory: URL = JournalDirectory.get()
     
     // Initialize with optional initial values
     init(
@@ -69,6 +73,18 @@ struct ContentView: View {
                         onDefer(yesterdayText, todayText)
                     }
                     .disabled(secondsRemaining > 0)
+
+                    Button("Change Folder…") {
+                        chooseFolder()
+                    }
+                    .buttonStyle(.link)
+                    .padding(.top, 4)
+
+                    // Display the currently-selected folder in a subtle caption
+                    Text(chosenDirectory.path)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
                 }
                 // 2️⃣  centre the content but cap its width for readability
                 .frame(maxWidth: min(geo.size.width * 0.9, 700))
@@ -98,6 +114,31 @@ struct ContentView: View {
                 timer?.invalidate()
                 timer = nil
             }
+        }
+    }
+
+    private func chooseFolder() {
+        guard let window = NSApp.keyWindow else { return }
+
+        // 1️⃣  Temporarily clear kiosk presentation so the sheet is visible
+        let previousOpts = NSApp.presentationOptions
+        NSApp.presentationOptions = []
+
+        let panel = NSOpenPanel()
+        panel.canChooseFiles = false
+        panel.canChooseDirectories = true
+        panel.allowsMultipleSelection = false
+        panel.directoryURL = chosenDirectory
+        panel.prompt = "Choose"
+
+        panel.beginSheetModal(for: window) { response in
+            if response == .OK, let url = panel.url {
+                chosenDirectory = url
+                JournalDirectory.set(url)
+            }
+
+            // 2️⃣  Restore kiosk flags
+            NSApp.presentationOptions = previousOpts
         }
     }
 }

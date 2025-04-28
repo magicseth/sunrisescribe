@@ -34,9 +34,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func todaysEntryMissing() -> Bool {
         let df = DateFormatter(); df.dateFormat = "yyyy-MM-dd"
-        let path = FileManager.default.homeDirectoryForCurrentUser
-                  .appendingPathComponent("JournalEntries/\(df.string(from: .now)).txt").path
-        return !FileManager.default.fileExists(atPath: path)
+        let file = JournalDirectory.get().appendingPathComponent("\(df.string(from: .now)).txt")
+        return !FileManager.default.fileExists(atPath: file.path)
     }
     func applicationShouldTerminate(_ sender: NSApplication)
         -> NSApplication.TerminateReply
