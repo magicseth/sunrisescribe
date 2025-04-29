@@ -33,6 +33,17 @@ final class JournalWindowController: NSWindowController {
     // Store the content when deferred
     private var savedYesterdayText = ""
     private var savedTodayText = ""
+    private var savedDate: String? // Track the date associated with cached text
+
+    private let dateFormatter: DateFormatter = {
+        let df = DateFormatter()
+        df.dateFormat = "yyyy-MM-dd"
+        return df
+    }()
+
+    private func currentDateString() -> String {
+        dateFormatter.string(from: .now)
+    }
 
     init() {
         // 1️⃣  Make the hosting controller generic over AnyView
@@ -56,7 +67,13 @@ final class JournalWindowController: NSWindowController {
     }
     
     private func refreshContentView() {
-        // Increment counter to force SwiftUI to create a completely new ContentView
+        // If the cached text is from a previous day, reset it
+        if savedDate != currentDateString() {
+            savedYesterdayText = ""
+            savedTodayText = ""
+            savedDate = currentDateString()
+        }
+
         viewResetCounter += 1
         
         // Use the ID parameter to force a new instance with fresh state
@@ -71,10 +88,12 @@ final class JournalWindowController: NSWindowController {
                 },
                 onDefer: { [weak self] (yesterday: String, today: String) in
                     // Save the current text when deferring
-                    self?.savedYesterdayText = yesterday
-                    self?.savedTodayText = today
-                    self?.hideAndRelax()
-                    self?.close()
+                    guard let self = self else { return }
+                    self.savedYesterdayText = yesterday
+                    self.savedTodayText = today
+                    self.savedDate = self.currentDateString()
+                    self.hideAndRelax()
+                    self.close()
                 }
             )
             .id(viewResetCounter) // This forces SwiftUI to create a completely new view instance
@@ -141,8 +160,13 @@ final class JournalWindowController: NSWindowController {
     // Loads today's entry from disk (if present) so that the next call to `show()`
     // will present the existing contents for editing.
     func populateFromTodaysEntry() {
-        let df = DateFormatter(); df.dateFormat = "yyyy-MM-dd"
-        let fileURL = JournalDirectory.get().appendingPathComponent("\(df.string(from: .now)).txt")
+        // First ensure cache isn't stale
+        if savedDate != currentDateString() {
+            savedYesterdayText = ""
+            savedTodayText = ""
+        }
+
+        let fileURL = JournalDirectory.get().appendingPathComponent("\(currentDateString()).txt")
         // If the file doesn't exist (or cannot be read) we leave the cached
         // text as-is – this supports the "Skip for now" flow where the user may
         // relaunch later to continue writing the deferred entry.
@@ -165,10 +189,12 @@ final class JournalWindowController: NSWindowController {
 
             savedYesterdayText = yesterdaySection
             savedTodayText = todaySection
+            savedDate = currentDateString()
         } else {
             // Fallback – treat whole file as a single blob in the today field
             savedYesterdayText = ""
             savedTodayText = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+            savedDate = currentDateString()
         }
     }
 }
