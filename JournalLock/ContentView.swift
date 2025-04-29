@@ -10,7 +10,8 @@ struct ContentView: View {
 
     @State private var yesterdayText: String
     @State private var todayText: String
-    @State private var secondsRemaining = 30
+    @AppStorage("journalTimeoutSeconds") private var timeoutSeconds: Int = 30
+    @State private var secondsRemaining: Int = 0
     @State private var timer: Timer?
     @State private var chosenDirectory: URL = JournalDirectory.get()
     
@@ -107,6 +108,7 @@ struct ContentView: View {
     }
     
     private func startTimer() {
+        secondsRemaining = timeoutSeconds
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
             if secondsRemaining > 0 {
                 secondsRemaining -= 1

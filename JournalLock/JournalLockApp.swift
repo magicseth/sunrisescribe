@@ -27,7 +27,7 @@ struct JournalLockApp: App {
 //    }
     var body: some Scene {
         Settings {
-            EmptyView()      // no visible window at launch
+            SettingsView()
         }
     }
 
