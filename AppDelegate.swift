@@ -44,4 +44,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         
     }
 
+    // Invoked when the user opens the app again (e.g. via Spotlight) while it is already
+    // running. This should always show the journal window so the current day's entry can
+    // be reviewed or edited.
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        journalWindow.show()
+        return true // we handled the reopen
+    }
+
 }

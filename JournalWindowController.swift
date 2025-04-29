@@ -88,6 +88,9 @@ final class JournalWindowController: NSWindowController {
     func show() {
         guard let win = window else { return }
         
+        // Load any existing entry of the day so the user can keep editing
+        populateFromTodaysEntry()
+        
         // Reset the ContentView to ensure the timer is reset, but preserve text fields
         refreshContentView()
         
@@ -133,6 +136,40 @@ final class JournalWindowController: NSWindowController {
 
         // 3️⃣ Return to accessory (no Dock / Cmd-Tab icon)
         NSApp.setActivationPolicy(.accessory)
+    }
+
+    // Loads today's entry from disk (if present) so that the next call to `show()`
+    // will present the existing contents for editing.
+    func populateFromTodaysEntry() {
+        let df = DateFormatter(); df.dateFormat = "yyyy-MM-dd"
+        let fileURL = JournalDirectory.get().appendingPathComponent("\(df.string(from: .now)).txt")
+        // If the file doesn't exist (or cannot be read) we leave the cached
+        // text as-is – this supports the "Skip for now" flow where the user may
+        // relaunch later to continue writing the deferred entry.
+        guard let raw = try? String(contentsOf: fileURL, encoding: .utf8) else {
+            return
+        }
+
+        // Split the file at the "## Today" marker
+        // Expected format:
+        // ## Yesterday\n<yesterday>\n\n## Today\n<today>
+        let components = raw.components(separatedBy: "## Today")
+        if components.count == 2 {
+            // Remove the leading "## Yesterday" header and trim whitespace
+            let yesterdaySection = components[0]
+                .replacingOccurrences(of: "## Yesterday", with: "")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+
+            let todaySection = components[1]
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+
+            savedYesterdayText = yesterdaySection
+            savedTodayText = todaySection
+        } else {
+            // Fallback – treat whole file as a single blob in the today field
+            savedYesterdayText = ""
+            savedTodayText = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        }
     }
 }
 import Carbon.HIToolbox   // for kVK_Tab
