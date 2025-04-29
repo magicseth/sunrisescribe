@@ -1,7 +1,9 @@
 import SwiftUI
+import Foundation
 
 struct SettingsView: View {
     @AppStorage("journalTimeoutSeconds") private var timeoutSeconds: Int = 30
+    @State private var journalPath: String = "Loading..."
     
     private let timeoutOptions = [10, 15, 30, 45, 60, 120]
     private let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
@@ -30,6 +32,15 @@ struct SettingsView: View {
                 .padding(.vertical, 5)
             }
             
+            GroupBox("Journal Location") {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Journal entries will be saved in your Documents folder. To change this location, use the 'Save As' dialog when first saving a journal entry.")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                .padding(.vertical, 5)
+            }
+            
             GroupBox("About") {
                 VStack(alignment: .leading, spacing: 10) {
                     HStack {
@@ -52,7 +63,7 @@ struct SettingsView: View {
             Spacer()
         }
         .padding()
-        .frame(width: 400, height: 250)
+        .frame(width: 400, height: 350)
     }
 }
 

@@ -10,6 +10,9 @@ struct JournalLockApp: App {
     private let journalDir = JournalDirectory.get()
 
     init() {
+        // Print the actual directory path for debugging
+        print("Journal entries will be saved to: \(journalDir.path)")
+        
         registerAsLoginItem()             // auto-launch at login
         if todaysEntryExists() {          // already wrote today?
             // Quit immediately – nothing to do
@@ -82,6 +85,9 @@ extension JournalLockApp {
         \(today)
         """
         try? content.write(to: todaysFilename(), atomically: true, encoding: .utf8)
+        
+        // Log where the file was saved
+        print("Journal entry saved to: \(todaysFilename().path)")
 
 //        NSApp.terminate(nil)
     }

@@ -1,4 +1,5 @@
 import Foundation
+import AppKit
 
 /// Utility to manage the folder where journal entries are stored.
 /// The location is persisted in UserDefaults so it can be changed at runtime
@@ -6,14 +7,18 @@ import Foundation
 enum JournalDirectory {
     private static let bookmarkKey = "journalDirectoryBookmark2"
     private static var cachedURL: URL?
+    private static let defaultFolderName = "SunriseScribeEntries"
+    private static var didPromptForPermissions = false
 
     /// Returns the currently configured directory for journal entries. If a
     /// security-scoped bookmark is stored we resolve it and start accessing the
-    /// resource (only once per launch). Otherwise we fall back to the legacy
-    /// path `~/JournalEntries` inside the user's home folder.
+    /// resource (only once per launch). Otherwise we use a temporary location
+    /// and prompt the user to select a proper location.
     static func get() -> URL {
+        // Return cached URL if available
         if let cachedURL { return cachedURL }
 
+        // Try to resolve bookmark
         let defaults = UserDefaults.standard
         if let data = defaults.data(forKey: bookmarkKey) {
             var stale = false
@@ -51,5 +56,19 @@ enum JournalDirectory {
 
         cachedURL = url
         _ = url.startAccessingSecurityScopedResource()
+    }
+    
+    /// Resets the saved directory and prompts for a new location
+    static func resetLocation() {
+        cachedURL?.stopAccessingSecurityScopedResource()
+        cachedURL = nil
+        UserDefaults.standard.removeObject(forKey: bookmarkKey)
+        didPromptForPermissions = false
+        _ = get() // This will trigger the permission request
+    }
+    
+    /// For debugging: returns the current path as a string
+    static func getPathForDebugging() -> String {
+        return get().path
     }
 } 
