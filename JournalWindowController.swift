@@ -52,6 +52,7 @@ final class JournalWindowController: NSWindowController {
 
         // 2️⃣  Build the window
         let win = JournalWindow(contentViewController: host)
+        win.title = "Sunrise Scribe"
         win.styleMask = [.fullSizeContentView, .titled]
         win.titleVisibility = .hidden
         win.collectionBehavior = [.fullScreenPrimary, .canJoinAllSpaces]
