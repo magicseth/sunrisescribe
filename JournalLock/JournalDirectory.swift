@@ -37,7 +37,8 @@ enum JournalDirectory {
 
         // Fallback – no bookmark yet
         let fallback = FileManager.default.homeDirectoryForCurrentUser
-            .appendingPathComponent("JournalEntries", isDirectory: true)
+            .appendingPathComponent("Documents", isDirectory: true)
+            .appendingPathComponent(defaultFolderName, isDirectory: true)
         cachedURL = fallback
         return fallback
     }

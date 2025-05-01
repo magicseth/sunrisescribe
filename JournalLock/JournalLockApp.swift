@@ -16,6 +16,9 @@ struct JournalLockApp: App {
     // Reference to the AppDelegate
     @NSApplicationDelegateAdaptor private var appDelegate: AppDelegate
 
+    // Keep a strong reference to the setup wizard window (if presented)
+    private var setupWindow: NSWindow?
+
     init() {
         // Print the actual directory path for debugging
         print("Journal entries will be saved to: \(journalDir.path)")
@@ -33,6 +36,19 @@ struct JournalLockApp: App {
             enableKioskMode()
         }
         createFolderIfNeeded()
+
+        // Show setup wizard as a standalone window if setup is not yet completed
+        if !hasCompletedSetup {
+            let wizardView = SetupWizardWrapper()
+            let hostingController = NSHostingController(rootView: wizardView)
+            let window = NSWindow(contentViewController: hostingController)
+            window.title = "Sunrise Scribe Setup"
+            window.setContentSize(NSSize(width: 700, height: 500))
+            window.center()
+            window.makeKeyAndOrderFront(nil)
+            // Keep a strong reference so the window isn't deallocated
+            self.setupWindow = window
+        }
     }
 
     // watch hasCompletedSetup, and call init if it changes
@@ -40,30 +56,6 @@ struct JournalLockApp: App {
 
 
     var body: some Scene {
-        WindowGroup {
-            ZStack {
-                if !hasCompletedSetup {
-                    SetupWizardWrapper()
-                } else {
-                    WindowCloser()
-                }
-            }
-            .animation(.easeInOut, value: hasCompletedSetup)
-            .onChange(of: hasCompletedSetup) { completed in
-                 guard completed else { return }
-                if let win = NSApp.keyWindow { win.close() }
-
-                 // Perform tasks deferred until setup finishes
-//                 registerAsLoginItem()
-                 enableKioskMode()
-                 // Show the journal just in case wizard didn't
-//                 if let delegate = NSApp.delegate as? AppDelegate {
-//                     delegate.showJournal()
-//                 }
-            }
-        }
-        .windowStyle(HiddenTitleBarWindowStyle())
-        
         Settings {
             SettingsView()
         }
