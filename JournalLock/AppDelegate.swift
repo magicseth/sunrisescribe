@@ -4,11 +4,18 @@ import ServiceManagement
 
 // 1️⃣  Runs all the unlock logic
 final class AppDelegate: NSObject, NSApplicationDelegate {
-    @AppStorage("hasCompletedSetup2") private var hasCompletedSetup: Bool = false
+    @AppStorage("hascompletedsetup8") private var hasCompletedSetup: Bool = false
     private lazy var journalWindow = JournalWindowController()
 
     func applicationDidFinishLaunching(_ note: Notification) {
         // At boot
+    
+        // Listen for explicit request from SetupWizard
+        DistributedNotificationCenter.default().addObserver(
+            self,
+            selector: #selector(showJournalNotification),
+            name: .init("SunriseScribeShowJournal"),
+            object: nil)
     
         showIfNeeded()
     
@@ -32,8 +39,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func showIfNeeded() {
             if (hasCompletedSetup) {
 
-        guard todaysEntryMissing() else { return }
-        journalWindow.show()          // full-screen SwiftUI window
+                guard todaysEntryMissing() else { return }
+                journalWindow.show()          // full-screen SwiftUI window
             }
     }
 
@@ -60,4 +67,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         return true // we handled the reopen
     }
 
+    /// Allows other parts of the app (e.g. SetupWizard) to show the journal window immediately.
+    @objc func showJournal() {
+        journalWindow.show()
+    }
+
+    @objc private func showJournalNotification(_ notification: Notification) {
+        showJournal()
+    }
 }

@@ -4,13 +4,14 @@ import Cocoa // For NSApp
 import Foundation
 
 struct SetupWizard: View {
-    @AppStorage("hasCompletedSetup2") private var hasCompletedSetup: Bool = false
+    @AppStorage("hascompletedsetup8") private var hasCompletedSetup: Bool = false
     @AppStorage("journalTimeoutSeconds") private var timeoutSeconds: Int = 30
     @AppStorage("launchAtLogin") private var launchAtLogin: Bool = true
     @Environment(\.dismiss) private var dismiss
     
     @State private var currentPage = 0
     private let timeoutOptions = [10, 15, 30, 45, 60, 120]
+    @State private var wizardWindow: NSWindow?
     
     var body: some View {
         ZStack {
@@ -18,6 +19,7 @@ struct SetupWizard: View {
             LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.7), Color.purple.opacity(0.5)]), 
                            startPoint: .topLeading, 
                            endPoint: .bottomTrailing)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .ignoresSafeArea()
             
             // Content
@@ -62,7 +64,7 @@ struct SetupWizard: View {
                             .frame(width: 8, height: 8)
                     }
                 }
-                .padding()
+                .padding(.top, 10)
                 
                 // Navigation buttons
                 HStack {
@@ -106,11 +108,27 @@ struct SetupWizard: View {
                         .cornerRadius(8)
                     }
                 }
+                .frame(maxWidth: .infinity)
                 .padding(.horizontal, 40)
                 .padding(.bottom, 30)
             }
-            .frame(width: 600, height: 500)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            .onAppear {
+                // Capture reference to the window showing the wizard
+                if let win = NSApp.keyWindow {
+                    wizardWindow = win
+                }
+                ensureRegularApp()
+            }
         }
+    }
+    
+    /// Make sure the application shows up in Cmd-Tab / Dock while the setup wizard is onscreen.
+    private func ensureRegularApp() {
+        if NSApp.activationPolicy() != .regular {
+            NSApp.setActivationPolicy(.regular)
+        }
+        NSApp.activate(ignoringOtherApps: true)
     }
     
     private var welcomePage: some View {
@@ -251,11 +269,13 @@ struct SetupWizard: View {
         }
         
         // Mark setup as completed
-        hasCompletedSetup = true
+         hasCompletedSetup = true
         
         // Close the window and enable kiosk mode for journal
         DispatchQueue.main.async {
             dismiss()
+            // Close the wizard window to avoid blank window lingering
+            wizardWindow?.close()
             
             // Enable kiosk mode for the journal window
             let opts: NSApplication.PresentationOptions = [
@@ -269,15 +289,7 @@ struct SetupWizard: View {
             NSApp.presentationOptions = opts
             
             // Show journal window or terminate
-            if todaysEntryExists() {
-                NSApp.terminate(nil)
-            } else {
-                // Trigger journal window to appear
-                NotificationCenter.default.post(
-                    name: NSWorkspace.sessionDidBecomeActiveNotification,
-                    object: nil
-                )
-            }
+            DistributedNotificationCenter.default().post(name: .init("SunriseScribeShowJournal"), object: nil)
         }
     }
     

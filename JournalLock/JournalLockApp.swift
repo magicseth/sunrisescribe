@@ -5,7 +5,7 @@ import Cocoa
 @main
 struct JournalLockApp: App {
     @StateObject private var appState = AppState()
-    @AppStorage("hasCompletedSetup2") private var hasCompletedSetup: Bool = false
+    @AppStorage("hascompletedsetup8") private var hasCompletedSetup: Bool = false
 
     // Directory that will hold YYYY-MM-DD.txt files
     private let journalDir: URL = {
@@ -32,22 +32,33 @@ struct JournalLockApp: App {
             // Only enable kiosk mode if setup is completed
             enableKioskMode()
         }
-        
         createFolderIfNeeded()
     }
+
+    // watch hasCompletedSetup, and call init if it changes
+    
+
 
     var body: some Scene {
         WindowGroup {
             ZStack {
                 if !hasCompletedSetup {
                     SetupWizardWrapper()
-                        .frame(width: 600, height: 500)
-                        .transition(.opacity)
                 } else {
                     EmptyView() // AppDelegate handles showing the journal window
                 }
             }
             .animation(.easeInOut, value: hasCompletedSetup)
+            .onChange(of: hasCompletedSetup) { completed in
+                // guard completed else { return }
+                // // Perform tasks deferred until setup finishes
+                // registerAsLoginItem()
+                // enableKioskMode()
+                // // Show the journal just in case wizard didn't
+                // if let delegate = NSApp.delegate as? AppDelegate {
+                //     delegate.showJournal()
+                // }
+            }
         }
         .windowStyle(HiddenTitleBarWindowStyle())
         
@@ -59,7 +70,7 @@ struct JournalLockApp: App {
 
 // Wrapper view to handle setup completion
 struct SetupWizardWrapper: View {
-    @AppStorage("hasCompletedSetup2") private var hasCompletedSetup: Bool = false
+    @AppStorage("hascompletedsetup8") private var hasCompletedSetup: Bool = false
     @State private var showSetupWizard = true
     
     var body: some View {
@@ -67,9 +78,10 @@ struct SetupWizardWrapper: View {
             if showSetupWizard {
                 SetupWizard()
                     .onDisappear {
-                        // If setup was completed, we need to hide the wizard
+                        // If setup was completed, we need to hide the wizard and close its window
                         if hasCompletedSetup {
                             showSetupWizard = false
+                            if let win = NSApp.keyWindow { win.close() }
                         }
                     }
             } else {
