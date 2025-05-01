@@ -198,5 +198,31 @@ final class JournalWindowController: NSWindowController {
             savedDate = currentDateString()
         }
     }
+
+    func showWindowed() {
+        guard let win = window else { return }
+        populateFromTodaysEntry()
+        refreshContentView()
+        // Ensure we are a regular app and focused
+        if NSApp.activationPolicy() != .regular { NSApp.setActivationPolicy(.regular) }
+        NSApp.activate(ignoringOtherApps: true)
+        // Remove any kiosk options
+        NSApp.presentationOptions = []
+        // Show the window (not full-screen)
+        win.makeKeyAndOrderFront(nil)
+        // Lower the window level so it behaves like a normal app window
+        win.level = .normal
+        // If the window is currently in full-screen, exit that mode
+        if win.styleMask.contains(.fullScreen) {
+            win.toggleFullScreen(nil)
+        }
+
+        // Give it a sensible size and centre it
+        if let screen = NSScreen.main {
+            let frame = screen.visibleFrame.insetBy(dx: 100, dy: 100)
+            win.setFrame(frame, display: true, animate: true)
+            win.center()
+        }
+    }
 }
 import Carbon.HIToolbox   // for kVK_Tab

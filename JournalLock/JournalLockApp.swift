@@ -5,7 +5,7 @@ import Cocoa
 @main
 struct JournalLockApp: App {
     @StateObject private var appState = AppState()
-    @AppStorage("hascompletedsetup8") private var hasCompletedSetup: Bool = false
+    @AppStorage("hascompletedsetup10") private var hasCompletedSetup: Bool = false
 
     // Directory that will hold YYYY-MM-DD.txt files
     private let journalDir: URL = {
@@ -45,19 +45,19 @@ struct JournalLockApp: App {
                 if !hasCompletedSetup {
                     SetupWizardWrapper()
                 } else {
-                    EmptyView() // AppDelegate handles showing the journal window
+                    WindowCloser()
                 }
             }
             .animation(.easeInOut, value: hasCompletedSetup)
             .onChange(of: hasCompletedSetup) { completed in
-                // guard completed else { return }
-                // // Perform tasks deferred until setup finishes
-                // registerAsLoginItem()
-                // enableKioskMode()
-                // // Show the journal just in case wizard didn't
-                // if let delegate = NSApp.delegate as? AppDelegate {
-                //     delegate.showJournal()
-                // }
+                 guard completed else { return }
+                 // Perform tasks deferred until setup finishes
+                 registerAsLoginItem()
+                 enableKioskMode()
+                 // Show the journal just in case wizard didn't
+//                 if let delegate = NSApp.delegate as? AppDelegate {
+//                     delegate.showJournal()
+//                 }
             }
         }
         .windowStyle(HiddenTitleBarWindowStyle())
@@ -70,7 +70,7 @@ struct JournalLockApp: App {
 
 // Wrapper view to handle setup completion
 struct SetupWizardWrapper: View {
-    @AppStorage("hascompletedsetup8") private var hasCompletedSetup: Bool = false
+    @AppStorage("hascompletedsetup10") private var hasCompletedSetup: Bool = false
     @State private var showSetupWizard = true
     
     var body: some View {
@@ -158,5 +158,13 @@ extension JournalLockApp {
         print("Journal entry saved to: \(todaysFilename().path)")
 
 //        NSApp.terminate(nil)
+    }
+}
+
+struct WindowCloser: View {
+    var body: some View {
+        Color.clear.frame(width: 1, height: 1).onAppear {
+            if let win = NSApp.keyWindow { win.close() }
+        }
     }
 }

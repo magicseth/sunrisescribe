@@ -4,7 +4,7 @@ import ServiceManagement
 
 // 1️⃣  Runs all the unlock logic
 final class AppDelegate: NSObject, NSApplicationDelegate {
-    @AppStorage("hascompletedsetup8") private var hasCompletedSetup: Bool = false
+    @AppStorage("hascompletedsetup10") private var hasCompletedSetup: Bool = false
     private lazy var journalWindow = JournalWindowController()
 
     func applicationDidFinishLaunching(_ note: Notification) {
@@ -34,7 +34,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             object: nil)
     }
 
-    @objc private func handleUnlock(_ n: Notification) { showIfNeeded() }
+    @objc private func handleUnlock(_ n: Notification) {
+        // For unlock events always kiosk version
+        showIfNeeded()
+    }
 
     private func showIfNeeded() {
             if (hasCompletedSetup) {
@@ -60,11 +63,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     // running. This should always show the journal window so the current day's entry can
     // be reviewed or edited.
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
-        if (hasCompletedSetup) {
-            journalWindow.show()
+        if hasCompletedSetup {
+            journalWindow.showWindowed()
         }
-            
-        return true // we handled the reopen
+        return true
     }
 
     /// Allows other parts of the app (e.g. SetupWizard) to show the journal window immediately.

@@ -4,7 +4,7 @@ import Cocoa // For NSApp
 import Foundation
 
 struct SetupWizard: View {
-    @AppStorage("hascompletedsetup8") private var hasCompletedSetup: Bool = false
+    @AppStorage("hascompletedsetup10") private var hasCompletedSetup: Bool = false
     @AppStorage("journalTimeoutSeconds") private var timeoutSeconds: Int = 30
     @AppStorage("launchAtLogin") private var launchAtLogin: Bool = true
     @Environment(\.dismiss) private var dismiss
