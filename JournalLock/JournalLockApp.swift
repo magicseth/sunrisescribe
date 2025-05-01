@@ -22,7 +22,7 @@ struct JournalLockApp: App {
         
         // Only register autolaunch if setup is completed
         if hasCompletedSetup {
-            registerAsLoginItem()             // auto-launch at login
+//            registerAsLoginItem()             // auto-launch at login
             
             if todaysEntryExists() {          // already wrote today?
                 // Quit immediately – nothing to do
@@ -54,7 +54,7 @@ struct JournalLockApp: App {
                 if let win = NSApp.keyWindow { win.close() }
 
                  // Perform tasks deferred until setup finishes
-                 registerAsLoginItem()
+//                 registerAsLoginItem()
                  enableKioskMode()
                  // Show the journal just in case wizard didn't
 //                 if let delegate = NSApp.delegate as? AppDelegate {
