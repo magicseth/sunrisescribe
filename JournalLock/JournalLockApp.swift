@@ -1,42 +1,98 @@
 import SwiftUI
-import ServiceManagement                  // 🟢 auto-launch API
-
+import ServiceManagement
+import Cocoa
 
 @main
 struct JournalLockApp: App {
-    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    @StateObject private var appState = AppState()
+    @AppStorage("hasCompletedSetup2") private var hasCompletedSetup: Bool = false
 
     // Directory that will hold YYYY-MM-DD.txt files
-    private let journalDir = JournalDirectory.get()
+    private let journalDir: URL = {
+        let docPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        return docPath.appendingPathComponent("SunriseScribeEntries", isDirectory: true)
+    }()
+    
+    // Reference to the AppDelegate
+    @NSApplicationDelegateAdaptor private var appDelegate: AppDelegate
 
     init() {
         // Print the actual directory path for debugging
         print("Journal entries will be saved to: \(journalDir.path)")
         
-        registerAsLoginItem()             // auto-launch at login
-        if todaysEntryExists() {          // already wrote today?
-            // Quit immediately – nothing to do
-//            DispatchQueue.main.async { NSApp.terminate(nil) }
+        // Only register autolaunch if setup is completed
+        if hasCompletedSetup {
+            registerAsLoginItem()             // auto-launch at login
+            
+            if todaysEntryExists() {          // already wrote today?
+                // Quit immediately – nothing to do
+//                DispatchQueue.main.async { NSApp.terminate(nil) }
+            }
+            
+            // Only enable kiosk mode if setup is completed
+            enableKioskMode()
         }
+        
         createFolderIfNeeded()
-        enableKioskMode()
     }
 
-//    var body: some Scene {
-//        WindowGroup { ContentView(onSave: save  ) }
-//            // prevent close/zoom buttons
-//            .windowResizability(.contentSize)
-//            .commands { CommandGroup(replacing: .appTermination) { } }
-//    }
     var body: some Scene {
+        WindowGroup {
+            ZStack {
+                if !hasCompletedSetup {
+                    SetupWizardWrapper()
+                        .frame(width: 600, height: 500)
+                        .transition(.opacity)
+                } else {
+                    EmptyView() // AppDelegate handles showing the journal window
+                }
+            }
+            .animation(.easeInOut, value: hasCompletedSetup)
+        }
+        .windowStyle(HiddenTitleBarWindowStyle())
+        
         Settings {
             SettingsView()
         }
     }
-
 }
 
+// Wrapper view to handle setup completion
+struct SetupWizardWrapper: View {
+    @AppStorage("hasCompletedSetup2") private var hasCompletedSetup: Bool = false
+    @State private var showSetupWizard = true
+    
+    var body: some View {
+        Group {
+            if showSetupWizard {
+                SetupWizard()
+                    .onDisappear {
+                        // If setup was completed, we need to hide the wizard
+                        if hasCompletedSetup {
+                            showSetupWizard = false
+                        }
+                    }
+            } else {
+                EmptyView()
+            }
+        }
+    }
+    
+    private func todaysEntryExists() -> Bool {
+        let df = DateFormatter(); df.dateFormat = "yyyy-MM-dd"
+        let today = df.string(from: .now)
+        let fm = FileManager.default
+        let docPath = fm.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let journalFolder = docPath.appendingPathComponent("SunriseScribeEntries", isDirectory: true)
+        let file = journalFolder.appendingPathComponent("\(today).txt")
+        return fm.fileExists(atPath: file.path)
+    }
+}
 
+// App state to be shared across the app
+class AppState: ObservableObject {
+    @Published var showJournalWindow: Bool = false
+}
 
 // MARK: – Launch at login
 extension JournalLockApp {

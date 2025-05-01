@@ -4,12 +4,14 @@ import ServiceManagement
 
 // 1️⃣  Runs all the unlock logic
 final class AppDelegate: NSObject, NSApplicationDelegate {
-
+    @AppStorage("hasCompletedSetup2") private var hasCompletedSetup: Bool = false
     private lazy var journalWindow = JournalWindowController()
 
     func applicationDidFinishLaunching(_ note: Notification) {
         // At boot
+    
         showIfNeeded()
+    
 
         // Every unlock thereafter
         NSWorkspace.shared.notificationCenter.addObserver(
@@ -28,8 +30,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     @objc private func handleUnlock(_ n: Notification) { showIfNeeded() }
 
     private func showIfNeeded() {
+            if (hasCompletedSetup) {
+
         guard todaysEntryMissing() else { return }
         journalWindow.show()          // full-screen SwiftUI window
+            }
     }
 
     private func todaysEntryMissing() -> Bool {
@@ -48,7 +53,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     // running. This should always show the journal window so the current day's entry can
     // be reviewed or edited.
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
-        journalWindow.show()
+        if (hasCompletedSetup) {
+            journalWindow.show()
+        }
+            
         return true // we handled the reopen
     }
 

@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1B20D3992DBF398100E880A3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B20D3982DBF398100E880A3 /* AppDelegate.swift */; };
 		1B20D39B2DBF39E800E880A3 /* JournalWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B20D39A2DBF39E800E880A3 /* JournalWindowController.swift */; };
 		1B20D3A12DBF439F00E880A3 /* TabbableTextEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B20D3A02DBF439F00E880A3 /* TabbableTextEditor.swift */; };
 		1B20D3C72DBF4A2B00E880A3 /* JournalWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B20D3C62DBF4A2B00E880A3 /* JournalWindow.swift */; };
@@ -34,7 +33,6 @@
 		1B20D36A2DBF33E500E880A3 /* Sunrise Scribe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Sunrise Scribe.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1B20D37B2DBF33E700E880A3 /* JournalLockTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JournalLockTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1B20D3852DBF33E700E880A3 /* JournalLockUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JournalLockUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		1B20D3982DBF398100E880A3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		1B20D39A2DBF39E800E880A3 /* JournalWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalWindowController.swift; sourceTree = "<group>"; };
 		1B20D3A02DBF439F00E880A3 /* TabbableTextEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabbableTextEditor.swift; sourceTree = "<group>"; };
 		1B20D3C62DBF4A2B00E880A3 /* JournalWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalWindow.swift; sourceTree = "<group>"; };
@@ -88,7 +86,6 @@
 			children = (
 				1B20D3C62DBF4A2B00E880A3 /* JournalWindow.swift */,
 				1B20D3A02DBF439F00E880A3 /* TabbableTextEditor.swift */,
-				1B20D3982DBF398100E880A3 /* AppDelegate.swift */,
 				1B20D39A2DBF39E800E880A3 /* JournalWindowController.swift */,
 				1B20D36C2DBF33E500E880A3 /* JournalLock */,
 				1B20D37E2DBF33E700E880A3 /* JournalLockTests */,
@@ -251,7 +248,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1B20D3992DBF398100E880A3 /* AppDelegate.swift in Sources */,
 				1B20D39B2DBF39E800E880A3 /* JournalWindowController.swift in Sources */,
 				1B20D3C72DBF4A2B00E880A3 /* JournalWindow.swift in Sources */,
 				1B20D3A12DBF439F00E880A3 /* TabbableTextEditor.swift in Sources */,
