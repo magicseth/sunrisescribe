@@ -1,6 +1,7 @@
 import SwiftUI
 import ServiceManagement
 import Cocoa // For NSApp
+import AppKit
 import Foundation
 
 struct SetupWizard: View {
@@ -96,7 +97,12 @@ struct SetupWizard: View {
                     
                     Button(action: {
                         withAnimation {
-                            if currentPage < 3 {
+                            if currentPage == 2 {
+                                // Prompt for folder, then advance after sheet closes
+                                chooseFolder {
+                                    currentPage += 1
+                                }
+                            } else if currentPage < 3 {
                                 currentPage += 1
                             } else {
                                 completeSetup()
@@ -327,6 +333,25 @@ struct SetupWizard: View {
             try SMAppService.mainApp.unregister()
         } catch {
             print("Failed to unregister login item: \(error)")
+        }
+    }
+    
+    private func chooseFolder(completion: @escaping () -> Void) {
+        // Present an open panel to let the user pick the journal folder
+        guard let window = wizardWindow ?? NSApp.keyWindow else { return completion() }
+
+        let panel = NSOpenPanel()
+        panel.canChooseFiles = false
+        panel.canChooseDirectories = true
+        panel.allowsMultipleSelection = false
+        panel.directoryURL = JournalDirectory.get()
+        panel.prompt = "Choose"
+
+        panel.beginSheetModal(for: window) { response in
+            if response == .OK, let url = panel.url {
+                JournalDirectory.set(url)
+            }
+            completion()
         }
     }
 }
