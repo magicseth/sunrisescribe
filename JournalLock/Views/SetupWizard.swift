@@ -345,7 +345,7 @@ struct SetupWizard: View {
         panel.canChooseDirectories = true
         panel.allowsMultipleSelection = false
         panel.directoryURL = JournalDirectory.get()
-        panel.prompt = "Choose"
+        panel.prompt = "Choose a directory to save your journal entries"
 
         panel.beginSheetModal(for: window) { response in
             if response == .OK, let url = panel.url {
