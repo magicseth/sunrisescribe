@@ -36,6 +36,7 @@
 		1B20D39A2DBF39E800E880A3 /* JournalWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalWindowController.swift; sourceTree = "<group>"; };
 		1B20D3A02DBF439F00E880A3 /* TabbableTextEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabbableTextEditor.swift; sourceTree = "<group>"; };
 		1B20D3C62DBF4A2B00E880A3 /* JournalWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalWindow.swift; sourceTree = "<group>"; };
+		1BBCACEE2DC33797002599BA /* Sunrise-Scribe-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Sunrise-Scribe-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -84,6 +85,7 @@
 		1B20D3612DBF33E500E880A3 = {
 			isa = PBXGroup;
 			children = (
+				1BBCACEE2DC33797002599BA /* Sunrise-Scribe-Info.plist */,
 				1B20D3C62DBF4A2B00E880A3 /* JournalWindow.swift */,
 				1B20D3A02DBF439F00E880A3 /* TabbableTextEditor.swift */,
 				1B20D39A2DBF39E800E880A3 /* JournalWindowController.swift */,
@@ -417,9 +419,11 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Sunrise-Scribe-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Sunrise Scribe";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSDocumentsFolderUsageDescription = "We save your journal entries in the Documents Folder";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -448,9 +452,11 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Sunrise-Scribe-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Sunrise Scribe";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSDocumentsFolderUsageDescription = "We save your journal entries in the Documents Folder";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

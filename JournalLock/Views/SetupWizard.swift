@@ -85,6 +85,12 @@ struct SetupWizard: View {
                     }
                     .opacity(currentPage > 0 ? 1 : 0)
                     .disabled(currentPage == 0)
+                    .buttonStyle(.plain)                              // ⬅️ turn off default bezel
+.background(
+    RoundedRectangle(cornerRadius: 8, style: .continuous)
+        .fill(currentPage == 0 ? Color.clear : Color.blue)
+)
+
                     
                     Spacer()
                     
@@ -107,6 +113,11 @@ struct SetupWizard: View {
                         .background(Color.blue)
                         .cornerRadius(8)
                     }
+.buttonStyle(.plain)                              // ⬅️ turn off default bezel
+.background(
+    RoundedRectangle(cornerRadius: 8, style: .continuous)
+        .fill(Color.blue)
+)
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.horizontal, 40)

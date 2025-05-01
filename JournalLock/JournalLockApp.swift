@@ -51,6 +51,8 @@ struct JournalLockApp: App {
             .animation(.easeInOut, value: hasCompletedSetup)
             .onChange(of: hasCompletedSetup) { completed in
                  guard completed else { return }
+                if let win = NSApp.keyWindow { win.close() }
+
                  // Perform tasks deferred until setup finishes
                  registerAsLoginItem()
                  enableKioskMode()
