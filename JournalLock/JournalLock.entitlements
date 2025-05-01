@@ -12,7 +12,5 @@
 	<true/>
 	<key>com.apple.security.files.downloads.read-write</key>
 	<true/>
-	<key>com.apple.security.personal-information.documents</key>
-	<true/>
 </dict>
 </plist>
